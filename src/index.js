@@ -1,5 +1,6 @@
 const express = require('express');
 const { getData, getDataById } = require('./utils/fsUtils');
+const tokenGenerator = require('./utils/tokenGenerator');
 
 const app = express();
 app.use(express.json());
@@ -22,6 +23,11 @@ app.get('/talker/:id', async ({ params }, res) => {
   const talker = await getDataById(params.id);
   if (!talker) return res.status(404).send({ message: 'Pessoa palestrante não encontrada' });
   return res.status(200).json(talker);
+});
+
+app.post('/login', async (_req, res) => {
+  const token = tokenGenerator();
+  return res.status(200).json({ token });
 });
 
 app.listen(PORT, () => {
