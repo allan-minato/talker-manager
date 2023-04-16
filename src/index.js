@@ -1,7 +1,15 @@
 const express = require('express');
+const fs = require('fs').promises;
+const { join } = require('path');
 const { getData, getDataById } = require('./utils/fsUtils');
 const tokenGenerator = require('./utils/tokenGenerator');
 const { passwordValidator, emailValidator } = require('./utils/loginValidator');
+const { tokenValidator,
+  nameValidator,
+  ageValidator,
+  talkValidator,
+  watchedAtValitador,
+  rateValidator } = require('./utils/addTalker');
 
 const app = express();
 app.use(express.json());
@@ -29,6 +37,34 @@ app.get('/talker/:id', async ({ params }, res) => {
 app.post('/login', passwordValidator, emailValidator, async (_req, res) => {
   const token = tokenGenerator();
   return res.status(200).json({ token });
+});
+
+const path = '/talker.json';
+const joinPath = join(__dirname, path);
+
+app.post('/talker', tokenValidator,
+nameValidator,
+ageValidator,
+talkValidator,
+watchedAtValitador,
+rateValidator, async (req, res) => {
+  const newTalker = await fs.readFile(joinPath, 'utf-8');
+  const newResponseTalkers = await JSON.parse(newTalker);
+  const { name, age, talk: { watchedAt, rate } } = req.body;
+  const id = newResponseTalkers[newResponseTalkers.length - 1].id + 1;
+
+  const newPerson = {
+    id,
+    name,
+    age,
+    talk: {
+      watchedAt,
+      rate,
+    },
+  };
+  newResponseTalkers.push(newPerson);
+  await fs.writeFile(joinPath, JSON.stringify(newResponseTalkers));
+  return res.status(201).json(newPerson);
 });
 
 app.listen(PORT, () => {
