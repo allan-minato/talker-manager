@@ -10,6 +10,7 @@ const { tokenValidator,
   talkValidator,
   watchedAtValitador,
   rateValidator } = require('./utils/addTalker');
+const { editTalker } = require('./utils/editTalker');
 
 const app = express();
 app.use(express.json());
@@ -65,6 +66,14 @@ rateValidator, async (req, res) => {
   newResponseTalkers.push(newPerson);
   await fs.writeFile(joinPath, JSON.stringify(newResponseTalkers));
   return res.status(201).json(newPerson);
+});
+
+app.put('/talker/:id', tokenValidator,
+nameValidator,
+ageValidator,
+talkValidator,
+watchedAtValitador,
+rateValidator, editTalker, async (_req, _res) => {
 });
 
 app.listen(PORT, () => {
