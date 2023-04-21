@@ -40,8 +40,7 @@ app.post('/login', passwordValidator, emailValidator, async (_req, res) => {
   return res.status(200).json({ token });
 });
 
-const path = '/talker.json';
-const joinPath = join(__dirname, path);
+const path = join(__dirname, '/talker.json');
 
 app.post('/talker', tokenValidator,
 nameValidator,
@@ -49,7 +48,7 @@ ageValidator,
 talkValidator,
 watchedAtValitador,
 rateValidator, async (req, res) => {
-  const newTalker = await fs.readFile(joinPath, 'utf-8');
+  const newTalker = await fs.readFile(path, 'utf-8');
   const newResponseTalkers = await JSON.parse(newTalker);
   const { name, age, talk: { watchedAt, rate } } = req.body;
   const id = newResponseTalkers[newResponseTalkers.length - 1].id + 1;
@@ -64,7 +63,7 @@ rateValidator, async (req, res) => {
     },
   };
   newResponseTalkers.push(newPerson);
-  await fs.writeFile(joinPath, JSON.stringify(newResponseTalkers));
+  await fs.writeFile(path, JSON.stringify(newResponseTalkers));
   return res.status(201).json(newPerson);
 });
 
@@ -74,6 +73,18 @@ ageValidator,
 talkValidator,
 watchedAtValitador,
 rateValidator, editTalker, async (_req, _res) => {
+});
+
+app.delete('/talker/:id', tokenValidator, async (req, res) => {
+  const { params: { id } } = req;
+  const response = await fs.readFile(path, 'utf-8');
+  const json = await (JSON.parse(response));
+
+  const find = json.findIndex((talker) => talker.id === Number(id));
+
+  json.splice(find, 1);
+  await fs.writeFile(path, JSON.stringify(json));
+  return res.status(204).end();
 });
 
 app.listen(PORT, () => {

@@ -9,7 +9,7 @@ const tokenValidator = (req, res, next) => {
     if (!(authorization.length === 16 && typeof authorization === 'string')) {
     return res.status(401).json({ message: 'Token inválido' });
 }
-next();
+   return next();
 };
 
     const nameValidator = (req, res, next) => {
@@ -23,7 +23,7 @@ next();
       return res.status(400).json({ message: 'O "name" deve ter pelo menos 3 caracteres' });
     }
   
-    next();
+    return next();
   };
 
 const ageValidator = (req, res, next) => {
@@ -39,7 +39,7 @@ const ageValidator = (req, res, next) => {
         message: 'O campo "age" deve ser um número inteiro igual ou maior que 18', 
     });
     }
-    next();
+    return next();
 };
 
 const talkValidator = (req, res, next) => {
@@ -49,7 +49,7 @@ const talkValidator = (req, res, next) => {
     if (!talk) {
         return res.status(400).json({ message: 'O campo "talk" é obrigatório' });
     }
-    next();
+    return next();
 };
 
 const watchedAtValitador = (req, res, next) => {
@@ -66,7 +66,7 @@ const watchedAtValitador = (req, res, next) => {
             message: 'O campo "watchedAt" deve ter o formato "dd/mm/aaaa"', 
         });
       }
-    next();
+    return next();
 };
 
 const rateValidator = (req, res, next) => {
@@ -80,7 +80,7 @@ const rateValidator = (req, res, next) => {
       const text = 'O campo "rate" deve ser um número inteiro entre 1 e 5';
       return res.status(400).json({ message: text });
     }
-    next();
+    return next();
 };
 
 module.exports = {
