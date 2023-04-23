@@ -18,6 +18,7 @@ app.use(express.json());
 const HTTP_OK_STATUS = 200;
 const PORT = process.env.PORT || '3001';
 
+const path = join(__dirname, '/talker.json');
 // não remova esse endpoint, e para o avaliador funcionar
 app.get('/', (_request, response) => {
   response.status(HTTP_OK_STATUS).send();
@@ -27,6 +28,16 @@ app.get('/talker', async (_req, res) => {
   const talker = await getData();
   if (!talker) return res.status(404).send({ message: 'error' });
   return res.status(200).json(talker);
+});
+
+app.get('/talker/search', tokenValidator, async (req, res) => {
+  const { q } = req.query;
+  const response = await fs.readFile(path, 'utf-8');
+  const json = await (JSON.parse(response));
+
+  const filter = json.filter((talker) => talker.name.includes(q));
+  console.log(filter);
+  return res.status(200).json(filter);
 });
 
 app.get('/talker/:id', async ({ params }, res) => {
@@ -39,8 +50,6 @@ app.post('/login', passwordValidator, emailValidator, async (_req, res) => {
   const token = tokenGenerator();
   return res.status(200).json({ token });
 });
-
-const path = join(__dirname, '/talker.json');
 
 app.post('/talker', tokenValidator,
 nameValidator,
