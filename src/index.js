@@ -62,8 +62,7 @@ rateValidator, async (req, res) => {
   const { name, age, talk: { watchedAt, rate } } = req.body;
   const id = newResponseTalkers[newResponseTalkers.length - 1].id + 1;
 
-  const newPerson = {
-    id,
+  const newPerson = { id,
     name,
     age,
     talk: {
